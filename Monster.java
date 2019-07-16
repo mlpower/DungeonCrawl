@@ -40,6 +40,11 @@ public class Monster
    {
       return this.hp;
    }
+   
+   public int getDamage()
+   {
+      return damageDealt;
+   }
 
    public void setHp(int hp)
    {

@@ -1,17 +1,16 @@
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Game
 {
    Scanner scanner;
    
-   Monster mon;
+   ArrayList<Monster> monsters;
    Player player;
    String weaponList;
    
-   DungeonRoom room1;
-   DungeonRoom room2;
-   DungeonRoom room3;
+   ArrayList<DungeonRoom> dungeonMap;
    DungeonRoom currentRoom;
    
    boolean justEnteredRoom;
@@ -22,8 +21,9 @@ public class Game
       scanner = new Scanner(System.in);
       
       player = new Player("Player 1", "Short Sword", 80, 15, 7);
+      initialiseMonsters();
       initialiseDungeon();
-      currentRoom = room1;
+      currentRoom = dungeonMap.get(0);
       
       System.out.println("Dungeon Crawl");
       System.out.println("-------------");
@@ -69,6 +69,11 @@ public class Game
       System.out.println("Your Options:");
       System.out.println("-------------");
       
+      if(currentRoom.hasSpecialMove())
+      {
+         System.out.println(currentRoom.getSpecialMoveDisplay());
+      }
+      
       if(monsterPresent)
       {
          System.out.println("A: Attack monster");
@@ -94,6 +99,7 @@ public class Game
          System.out.println("S: Go South");
       }
       
+      System.out.println("R: Read monster compendium");
       System.out.println("X: Exit Game");
       
       boolean validInput = false;
@@ -106,6 +112,11 @@ public class Game
          if(selection.length() != 1)
          {
             System.out.println("Error - invalid input.");
+         } else if(currentRoom.hasSpecialMove() &&
+            selection.equals(currentRoom.getSpecialKey()))
+         {
+            validInput = true;
+            specialMove(currentRoom.getSpecialKey());
          } else
          {
             switch(selection)
@@ -167,6 +178,11 @@ public class Game
                   {
                      System.out.println("Error - invalid input.");
                   }
+                  break;
+               case "R":
+                  validInput = true;
+                  System.out.println("You consult your monster compendium...");
+                  displayMonsters();
                   break;
                case "X":
                   validInput = true;
@@ -269,23 +285,73 @@ public class Game
       }
    }
    
+   private void initialiseMonsters()
+   {
+      monsters = new ArrayList<Monster>();
+      
+      Monster monster = new Monster("Man Slayer", "Orc");
+      monsters.add(monster);
+      
+      monster = new Monster("Gargantuan", "Orc");
+      monsters.add(monster);
+      
+      monster = new Monster("Akaviri Warrior", "Skeleton");
+      monsters.add(monster);
+      
+      monster = new Monster("Undead Soldier", "Skeleton");
+      monsters.add(monster);
+   }
+   
    private void initialiseDungeon()
    {
-      room1 = new DungeonRoom("Foyer",
+      dungeonMap = new ArrayList<DungeonRoom>();
+      
+      DungeonRoom room = new DungeonRoom("Foyer",
          "A bland cave opening with faintly carved Mayan iconography.",
          new boolean[]{true, false, false, false});
-      room2 = new DungeonRoom("Hallway",
+      dungeonMap.add(room);
+      
+      room = new DungeonRoom("Hallway",
          "A narrow passage dimly lit by lanterns - ominous shadows\nplay " +
          "on the walls.",
          new boolean[]{true, false, false, true});
-      room3 = new DungeonRoom("Arena",
-         "A large area with a motley crowd jeering from the grandstands.",
-         new Monster("Man Slayer", "Orc"),
-         new boolean[]{false, false, false, true});
+      dungeonMap.add(room);
       
-      room1.setExitRooms(new DungeonRoom[]{room2, null, null, null});
-      room2.setExitRooms(new DungeonRoom[]{room3, null, null, room1});
-      room3.setExitRooms(new DungeonRoom[]{null, null, null, room2});
+      room = new DungeonRoom("Arena",
+         "A large area with a motley crowd jeering from the grandstands.",
+         monsters.get(0), new boolean[]{false, true, false, true});
+      dungeonMap.add(room);
+      
+      room = new DungeonRoom("Secret Passage",
+         "An corridor leading east from a secret passage in the\narena, " +
+         "which is to the west.", new boolean[]{false, true, true, false});
+      dungeonMap.add(room);
+      
+      room = new DungeonRoom("Underground Temple",
+         "Hollowed out from the rock is a temple sanctuary with a\n" +
+         "drinking fountain.", new boolean[]{true, false, true, false});
+      dungeonMap.add(room);
+      
+      room = new DungeonRoom("Ancient Crypt",
+         "An alcove with a series of old tombs. You are overwhelmed\n" +
+         "with a sense of dark foreboding.", monsters.get(3),
+         new boolean[]{false, false, false, true});
+      dungeonMap.add(room);
+      
+      dungeonMap.get(0).setExitRooms(new DungeonRoom[]{dungeonMap.get(1), null,
+         null, null});
+      dungeonMap.get(1).setExitRooms(new DungeonRoom[]{dungeonMap.get(2), null,
+         null, dungeonMap.get(0)});
+      dungeonMap.get(2).setExitRooms(new DungeonRoom[]{null, dungeonMap.get(3),
+         null, dungeonMap.get(1)});
+      dungeonMap.get(3).setExitRooms(new DungeonRoom[]{null, dungeonMap.get(4),
+         dungeonMap.get(2), null});
+      dungeonMap.get(4).setExitRooms(new DungeonRoom[]{dungeonMap.get(5), null,
+         dungeonMap.get(3), null});
+      dungeonMap.get(5).setExitRooms(new DungeonRoom[]{null, null,
+         null, dungeonMap.get(4)});
+      
+      dungeonMap.get(4).setSpecialOption("D", "D: Drink from fountain");
    }
    
    private boolean monsterAttack()
@@ -329,6 +395,32 @@ public class Game
       }
       
       return loopGame;
+   }
+   
+   private void displayMonsters()
+   {
+      System.out.println("Monster Compendium");
+      System.out.println("------------------");
+      
+      for (Monster monster: monsters)
+      {
+         System.out.println(monster.getName());
+         System.out.println("Monster type: " + monster.getType());
+         System.out.println("Size: " + monster.getSize());
+         System.out.println("Maximum damage dealt: " + monster.getDamage());
+         System.out.println();
+      }
+   }
+   
+   private void specialMove(String specialKey)
+   {
+      if(specialKey.equals("D"))
+      {
+         System.out.println("You drink from the fountain...");
+         System.out.println("You feel fully refreshed! Your hit points have");
+         System.out.println("been fully replenished.");
+         player.setHitPoints(80);
+      }
    }
 
    public int weaponStrike(String weapon)

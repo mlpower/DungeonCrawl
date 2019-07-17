@@ -8,6 +8,10 @@ public class DungeonRoom
    private boolean[] exits;
    private DungeonRoom[] exitRooms;
    
+   private boolean specialMove;
+   private String specialKey;
+   private String specialMoveDisplay;
+   
    public DungeonRoom(String roomName, String description, boolean[] exits)
    {
       this.roomName = roomName;
@@ -15,6 +19,7 @@ public class DungeonRoom
       this.exits = exits;
       monsterPresent = false;
       monster = null;
+      specialMove = false;
    }
    
    public DungeonRoom(String roomName, String description, Monster monster,
@@ -25,6 +30,7 @@ public class DungeonRoom
       this.monster = monster;
       monsterPresent = true;
       this.exits = exits;
+      specialMove = false;
    }
    
    public String getName()
@@ -57,6 +63,21 @@ public class DungeonRoom
       return exitRooms[index];
    }
    
+   public boolean hasSpecialMove()
+   {
+      return specialMove;
+   }
+   
+   public String getSpecialKey()
+   {
+      return specialKey;
+   }
+   
+   public String getSpecialMoveDisplay()
+   {
+      return specialMoveDisplay;
+   }
+   
    public void setMonster(Monster monster)
    {
       this.monster = monster;
@@ -70,5 +91,12 @@ public class DungeonRoom
    public void setExitRooms(DungeonRoom[] exitRooms)
    {
       this.exitRooms = exitRooms;
+   }
+   
+   public void setSpecialOption(String specialKey, String specialMoveDisplay)
+   {
+      specialMove = true;
+      this.specialKey = specialKey;
+      this.specialMoveDisplay = specialMoveDisplay;
    }
 }

@@ -41,6 +41,11 @@ public class Monster
       return this.hp;
    }
    
+   public String getSize()
+   {
+      return size;
+   }
+   
    public int getDamage()
    {
       return damageDealt;

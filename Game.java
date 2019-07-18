@@ -240,48 +240,76 @@ public class Game
    private void goNorth()
    {
       System.out.println("Go North");
-      currentRoom = currentRoom.getExitRooms(0);
-      justEnteredRoom = true;
-      if(currentRoom.isMonsterPresent())
+      if(currentRoom.isMonsterPresent() && currentRoom.getExitBlocked() == 1)
       {
-         System.out.println("You face death itself in the form of a " +
-            currentRoom.getMonster().getName());
+         System.out.println("The " + currentRoom.getMonster().getName() +
+            " is blocking your way!");
+      } else
+      {
+         currentRoom = currentRoom.getExitRooms(0);
+         justEnteredRoom = true;
+         if(currentRoom.isMonsterPresent())
+         {
+            System.out.println("You face death itself in the form of a " +
+               currentRoom.getMonster().getName());
+         }
       }
    }
    
    private void goEast()
    {
       System.out.println("Go East");
-      currentRoom = currentRoom.getExitRooms(1);
-      justEnteredRoom = true;
-      if(currentRoom.isMonsterPresent())
+      if(currentRoom.isMonsterPresent() && currentRoom.getExitBlocked() == 2)
       {
-         System.out.println("You face death itself in the form of a " +
-            currentRoom.getMonster().getName());
+         System.out.println("The " + currentRoom.getMonster().getName() +
+            " is blocking your way!");
+      } else
+      {
+         currentRoom = currentRoom.getExitRooms(1);
+         justEnteredRoom = true;
+         if(currentRoom.isMonsterPresent())
+         {
+            System.out.println("You face death itself in the form of a " +
+               currentRoom.getMonster().getName());
+         }
       }
    }
    
    private void goWest()
    {
       System.out.println("Go West");
-      currentRoom = currentRoom.getExitRooms(2);
-      justEnteredRoom = true;
-      if(currentRoom.isMonsterPresent())
+      if(currentRoom.isMonsterPresent() && currentRoom.getExitBlocked() == 3)
       {
-         System.out.println("You face death itself in the form of a " +
-            currentRoom.getMonster().getName());
+         System.out.println("The " + currentRoom.getMonster().getName() +
+            " is blocking your way!");
+      } else
+      {
+         currentRoom = currentRoom.getExitRooms(2);
+         justEnteredRoom = true;
+         if(currentRoom.isMonsterPresent())
+         {
+            System.out.println("You face death itself in the form of a " +
+               currentRoom.getMonster().getName());
+         }
       }
    }
    
    private void goSouth()
    {
       System.out.println("Go South");
-      currentRoom = currentRoom.getExitRooms(3);
-      justEnteredRoom = true;
-      if(currentRoom.isMonsterPresent())
+      if(currentRoom.isMonsterPresent() && currentRoom.getExitBlocked() == 4)
       {
-         System.out.println("You face death itself in the form of a " +
-            currentRoom.getMonster().getName());
+         System.out.println("The " + currentRoom.getMonster().getName() +
+            " is blocking your way!");
+      } else
+      {
+         currentRoom = currentRoom.getExitRooms(3);
+         justEnteredRoom = true;
+         if(currentRoom.isMonsterPresent())
+         {
+            System.out.println("You face death itself in the form of a " +
+               currentRoom.getMonster().getName());
+         }
       }
    }
    
@@ -329,13 +357,25 @@ public class Game
       
       room = new DungeonRoom("Underground Temple",
          "Hollowed out from the rock is a temple sanctuary with a\n" +
-         "drinking fountain.", new boolean[]{true, false, true, false});
+         "drinking fountain.", new boolean[]{true, false, true, true});
       dungeonMap.add(room);
       
       room = new DungeonRoom("Ancient Crypt",
          "An alcove with a series of old tombs. You are overwhelmed\n" +
          "with a sense of dark foreboding.", monsters.get(3),
          new boolean[]{false, false, false, true});
+      dungeonMap.add(room);
+      
+      room = new DungeonRoom("Arched Corridor",
+         "A long north/south corrider lines with arches hewn from\n" +
+          "stone.", new boolean[]{true, false, false, true});
+      dungeonMap.add(room);
+      
+      room = new DungeonRoom("Hall of Statues",
+         "This room is lined with impressive marble statues of\n" +
+         "various creatures. A mischevious impish figure stands\n" +
+         "out in the centre. Grooves around the base indicate that\n" +
+         "it can be rotated.", new boolean[]{true, false, false, false});
       dungeonMap.add(room);
       
       dungeonMap.get(0).setExitRooms(new DungeonRoom[]{dungeonMap.get(1), null,
@@ -347,11 +387,23 @@ public class Game
       dungeonMap.get(3).setExitRooms(new DungeonRoom[]{null, dungeonMap.get(4),
          dungeonMap.get(2), null});
       dungeonMap.get(4).setExitRooms(new DungeonRoom[]{dungeonMap.get(5), null,
-         dungeonMap.get(3), null});
+         dungeonMap.get(3), dungeonMap.get(6)});
       dungeonMap.get(5).setExitRooms(new DungeonRoom[]{null, null,
          null, dungeonMap.get(4)});
+      dungeonMap.get(6).setExitRooms(new DungeonRoom[]{dungeonMap.get(4), null,
+               null, dungeonMap.get(7)});
+      dungeonMap.get(7).setExitRooms(new DungeonRoom[]{dungeonMap.get(6), null,
+               null, null});
+      
+      // East exit for the arena is blocked until the Man Slayer is killed.
+      dungeonMap.get(2).setExitBlocked(2);
+      
+      // South exit for the crypt is blocked until the Undead Solder is killed.
+      dungeonMap.get(5).setExitBlocked(4);
       
       dungeonMap.get(4).setSpecialOption("D", "D: Drink from fountain");
+      
+      dungeonMap.get(7).setSpecialOption("T", "T: Turn the Imp Statue");
    }
    
    private boolean monsterAttack()
@@ -362,17 +414,17 @@ public class Game
       if(chanceAttack < 40)
       {
          System.out.println("The " + monster.getName() + " grimaces and " +
-            "taunts you.");
+            "mocks your defensive posture.");
       } else
       {
          int chance = (int)(Math.random() * 100) + 1;
-         if(chance > 90)
+         if(chance > 95)
          {
             System.out.println("Ouch! The " + monster.getName() +
                " strikes you directly for " + monster.getDamage() +
                " hit points.");
             player.setHitPoints(player.getHitPoints() - monster.getDamage());
-         } else if(chance > 50)
+         } else if(chance > 60)
          {
             System.out.println("The " + monster.getName() +
                " swings and glances you for " + (monster.getDamage() / 4) +
@@ -414,12 +466,28 @@ public class Game
    
    private void specialMove(String specialKey)
    {
-      if(specialKey.equals("D"))
+      switch(specialKey)
       {
-         System.out.println("You drink from the fountain...");
-         System.out.println("You feel fully refreshed! Your hit points have");
-         System.out.println("been fully replenished.");
-         player.setHitPoints(80);
+         case "D":
+            System.out.println("You drink from the fountain...");
+            System.out.println("You feel refreshed! Your hit points");
+            System.out.println("have been fully replenished.");
+            player.setHitPoints(80);
+            break;
+         case "T":
+            System.out.println("You hear the faint sound of mechanical");
+            System.out.println("gears moving...");
+            System.out.println("A Gargantuan falls down from a valve in");
+            System.out.println("the ceiling!");
+            currentRoom.setMonster(monsters.get(1));
+            currentRoom.setMonsterPresent(true);
+            currentRoom.turnOffSpecial();
+            currentRoom.setExitBlocked(1);
+            break;
+         default:
+            System.out.println("Aren't you clever. You're not supposed");
+            System.out.println("to reach this point.");
+            break;
       }
    }
 

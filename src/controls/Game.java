@@ -2,8 +2,8 @@ package controls;
 
 import dungeon.DungeonMap;
 import dungeon.DungeonRoom;
-import toons.Monster;
-import toons.Player;
+import characters.Monster;
+import characters.Player;
 
 import java.util.Scanner;
 
@@ -15,6 +15,7 @@ public class Game
 
    private MonsterCompendium mc;
    private DungeonRoom currentRoom;
+   private DungeonMap dungeonMap;
    
    private boolean justEnteredRoom;
 
@@ -25,12 +26,15 @@ public class Game
 
       System.out.println("Welcome explorer.  Please enter your name to begin: ");
       String playerName = scanner.nextLine();
+      String type = selectRace();
 
-      player = new Player(playerName, "Short Sword", 80, 15, 7);
       mc = new MonsterCompendium();
+      dungeonMap = new DungeonMap(mc);
 
-      DungeonMap dungeonMap = new DungeonMap(mc);
-      currentRoom = dungeonMap.getRoom(0);
+      player = new Player(playerName, type, "Short Sword", 80, 15, 10, dungeonMap);
+
+
+
       
       System.out.println("Dungeon Crawl");
       System.out.println("-------------");
@@ -38,9 +42,10 @@ public class Game
       
       while(loopGame)
       {
-         statusDisplay();
+         currentRoom = player.getDungeonRoom();
+         System.out.println(currentRoom.statusDisplay());
          
-         loopGame = menuDisplay();
+         loopGame = menuDisplay(dungeonMap, currentRoom);
          
          if(loopGame && !justEnteredRoom && currentRoom.isMonsterPresent())
          {
@@ -55,22 +60,7 @@ public class Game
       scanner.close();
    }
    
-   private void statusDisplay()
-   {
-      System.out.println();
-      System.out.println(currentRoom.getName());
-      System.out.println(currentRoom.getDescription());
-      if(currentRoom.isMonsterPresent())
-      {
-         Monster monster = currentRoom.getMonster();
-         System.out.println("The " + monster.getName() +
-            " taunts you menacingly.");
-         System.out.println("It has " + monster.getHp() + " hit points.");
-      }
-      System.out.println();
-   }
-   
-   private boolean menuDisplay()
+   private boolean menuDisplay(DungeonMap dungeonMap, DungeonRoom currentRoom)
    {
       boolean loopGame = true;
       boolean[] exits = currentRoom.getExits();
@@ -135,7 +125,7 @@ public class Game
                   if(monsterPresent)
                   {
                      validInput = true;
-                     player.attackMonster(currentRoom.getMonster(), currentRoom);
+                     player.attackMonster(currentRoom.getMonster());
                   } else
                   {
                      System.out.println("Error - invalid input.");
@@ -143,7 +133,7 @@ public class Game
                   break;
                case "H":
                   validInput = true;
-                  displayPlayerStatus();
+                  System.out.println(player.displayPlayerStatus());
                   break;
                case "L":
                   validInput = true;
@@ -153,7 +143,7 @@ public class Game
                   if(exits[0])
                   {
                      validInput = true;
-                     goNorth();
+                     justEnteredRoom = player.goNorth();
                   } else
                   {
                      System.out.println("Error - invalid input.");
@@ -163,7 +153,7 @@ public class Game
                   if(exits[1])
                   {
                      validInput = true;
-                     goEast();
+                     justEnteredRoom = player.goEast();
                   } else
                   {
                      System.out.println("Error - invalid input.");
@@ -173,7 +163,7 @@ public class Game
                   if(exits[2])
                   {
                      validInput = true;
-                     goWest();
+                     justEnteredRoom = player.goWest();
                   } else
                   {
                      System.out.println("Error - invalid input.");
@@ -183,7 +173,7 @@ public class Game
                   if(exits[3])
                   {
                      validInput = true;
-                     goSouth();
+                     justEnteredRoom = player.goSouth();
                   } else
                   {
                      System.out.println("Error - invalid input.");
@@ -207,97 +197,7 @@ public class Game
       
       return loopGame;
    }
-   
 
-   
-   private void displayPlayerStatus()
-   {
-      System.out.println(player.getName() + " currently has " +
-         player.getHitPoints() + " hit points.");
-      System.out.println(player.getName() + " wields a " + player.getWeapon()
-         + " and can do " + player.getAttackStrength() + " damage.");
-   }
-   
-   private void goNorth()
-   {
-      System.out.println("Go North");
-      if(currentRoom.isMonsterPresent() && currentRoom.getExitBlocked() == 1)
-      {
-         System.out.println("The " + currentRoom.getMonster().getName() +
-            " is blocking your way!");
-      } else
-      {
-         currentRoom = currentRoom.getExitRooms(0);
-         justEnteredRoom = true;
-         if(currentRoom.isMonsterPresent())
-         {
-            System.out.println("You face death itself in the form of a " +
-               currentRoom.getMonster().getName());
-         }
-      }
-   }
-   
-   private void goEast()
-   {
-      System.out.println("Go East");
-      if(currentRoom.isMonsterPresent() && currentRoom.getExitBlocked() == 2)
-      {
-         System.out.println("The " + currentRoom.getMonster().getName() +
-            " is blocking your way!");
-      } else
-      {
-         currentRoom = currentRoom.getExitRooms(1);
-         justEnteredRoom = true;
-         if(currentRoom.isMonsterPresent())
-         {
-            System.out.println("You face death itself in the form of a " +
-               currentRoom.getMonster().getName());
-         }
-      }
-   }
-   
-   private void goWest()
-   {
-      System.out.println("Go West");
-      if(currentRoom.isMonsterPresent() && currentRoom.getExitBlocked() == 3)
-      {
-         System.out.println("The " + currentRoom.getMonster().getName() +
-            " is blocking your way!");
-      } else
-      {
-         currentRoom = currentRoom.getExitRooms(2);
-         justEnteredRoom = true;
-         if(currentRoom.isMonsterPresent())
-         {
-            System.out.println("You face death itself in the form of a " +
-               currentRoom.getMonster().getName());
-         }
-      }
-   }
-   
-   private void goSouth()
-   {
-      System.out.println("Go South");
-      if(currentRoom.isMonsterPresent() && currentRoom.getExitBlocked() == 4)
-      {
-         System.out.println("The " + currentRoom.getMonster().getName() +
-            " is blocking your way!");
-      } else
-      {
-         currentRoom = currentRoom.getExitRooms(3);
-         justEnteredRoom = true;
-         if(currentRoom.isMonsterPresent())
-         {
-            System.out.println("You face death itself in the form of a " +
-               currentRoom.getMonster().getName());
-         }
-      }
-   }
-
-
-   
-
-   
    private void specialMove(String specialKey)
    {
       switch(specialKey)
@@ -306,7 +206,7 @@ public class Game
             System.out.println("You drink from the fountain...");
             System.out.println("You feel refreshed! Your hit points");
             System.out.println("have been fully replenished.");
-            player.setHitPoints(80);
+            player.setHp(80);
             break;
          case "T":
             System.out.println("You hear the faint sound of mechanical");
@@ -344,6 +244,39 @@ public class Game
       return newWeapon + " added!";
    }
 
+   public String selectRace()
+   {
+      String type = "";
+      boolean condition = false;
+      do
+      {
+         System.out.println("Please choose a race: ");
+         System.out.println("A: Human");
+         System.out.println("B: Elf");
+         System.out.println("C: Dwarf");
+         System.out.println("Enter Selection: ");
+         String input = scanner.nextLine();
+         switch(input.toLowerCase())
+         {
+            case "a":
+               type = "Human";
+               condition = true;
+               break;
+            case "b":
+               type = "Elf";
+               condition = true;
+               break;
+            case "c":
+               type = "Dwarf";
+               condition = true;
+               break;
+            default:
+               System.out.println("Error: invalid selection, please try again");
+               break;
+         }
+      } while(!condition);
+      return type;
+   }
    public static void main(String[] args)
    {
       Game game = new Game();

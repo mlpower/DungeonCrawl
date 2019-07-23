@@ -1,6 +1,6 @@
 package dungeon;
 
-import toons.Monster;
+import characters.Monster;
 
 public class DungeonRoom
 {
@@ -122,5 +122,19 @@ public class DungeonRoom
       exitBlocked = direction;
    }
 
+   public String statusDisplay()
+   {
+      StringBuilder sb = new StringBuilder();
+      sb.append("\n");
+      sb.append(this.roomName).append("\n");
+      sb.append(this.description).append("\n");
+      if(monsterPresent)
+      {
+         sb.append("The ").append(monster.getName())
+                  .append(" taunts you menacingly.");
+         sb.append("It has ").append(monster.getHp()).append(" hit points.");
+      }
+      return sb.toString();
+   }
 
 }

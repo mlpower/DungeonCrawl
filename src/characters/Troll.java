@@ -1,4 +1,6 @@
-package toons;
+package characters;
+
+import dungeon.DungeonRoom;
 
 public class Troll extends Monster
 {
@@ -7,9 +9,5 @@ public class Troll extends Monster
       super(name, "Troll", 60, "Large", 25);
    }
 
-   public boolean monsterAttack(Player player)
-   {
-      return super.monsterAttack(player);
-   }
 
 }

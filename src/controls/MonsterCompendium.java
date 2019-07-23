@@ -1,6 +1,6 @@
 package controls;
 
-import toons.*;
+import characters.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -60,8 +60,6 @@ public class MonsterCompendium
          }
       }
    }
-
-
 
    @NotNull
    private String generateName()

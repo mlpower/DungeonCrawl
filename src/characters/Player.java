@@ -87,7 +87,7 @@ public class Player extends Character
              + " and can do " + this.maxDmg + " damage.";
    }
 
-   //@TODO make these player class methods
+
    public boolean goNorth()
    {
       System.out.println("Go North");

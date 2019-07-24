@@ -1,5 +1,5 @@
 # DungeonCrawl
-Collaboration space for the Psijic Order - Monster Game
+Collaboration space for the Psijic Order - characters.Monster Game
 
 Currently we have a menu system that will give options to the player based on the current surroundings. For example, only certain exit points will be available depending upon the DungeonRoom. The attack option is only available if a monster is present. The player's attributes are limited to hit points, weapon and damage dealt.
 
